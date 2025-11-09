@@ -1,9 +1,12 @@
-# AIxiliary - AI-Powered File Classification System
+# AIxiliary - AI-Powered File Classification & Expense Management System
 
-A web application that allows users to submit files from OneDrive (or local computer) and have them automatically classified and analyzed using OpenAI's GPT-4.
+A web application that combines two powerful features:
+1. **AI Classification**: Submit files from OneDrive (or local computer) and have them automatically classified and analyzed using OpenAI's GPT-4
+2. **NI Expenses**: A simple expense management system for tracking and managing expenses with OneDrive storage
 
 ## Features
 
+### AI Classification
 - **OneDrive Integration**: Authenticate with Microsoft OAuth and access OneDrive files
 - **Drag & Drop Interface**: Simple, intuitive file submission interface
 - **AI-Powered Classification**: Use GPT-4 to automatically classify and extract information from documents
@@ -11,6 +14,15 @@ A web application that allows users to submit files from OneDrive (or local comp
 - **Multiple File Formats**: Support for PDF, DOCX, TXT, JSON, CSV, XML, HTML, and more
 - **Real-time Processing**: Submit and process files with immediate feedback
 - **Results Display**: View classification results and extracted information in an organized manner
+
+### NI Expenses
+- **Expense Submission**: Simple form to submit expenses with details and attachments
+- **OneDrive Storage**: All expenses and files are stored in your OneDrive account
+- **Multi-User Support**: Supports 3 users (User1, User2, User3)
+- **File Attachments**: Upload JPG or PDF receipts/invoices (up to 10MB)
+- **State Management**: Track expense states (recebida, paga, rejeitada)
+- **Monthly Reports**: View and filter expenses by user and month
+- **Expense Tracking**: Monitor total expenses and status breakdowns
 
 ## Architecture
 
@@ -142,11 +154,19 @@ The application will be available at:
 
 ## Usage
 
-### 1. Login
+### Initial Setup - Login
 
-- Click "Sign in with Microsoft" on the login page
-- Authenticate with your Microsoft account
-- Grant permissions for OneDrive access
+1. Click "Sign in with Microsoft" on the login page
+2. Authenticate with your Microsoft account
+3. Grant permissions for OneDrive access
+
+Once logged in, you'll have access to both AI Classification and NI Expenses features through the navigation menu.
+
+---
+
+## Using AI Classification
+
+### 1. Login (Already completed above)
 
 ### 2. Submit Files
 
@@ -192,11 +212,101 @@ Results include:
 - **Extracted Information**: Key-value pairs of extracted data
 - **Error Messages**: If any files failed to process
 
+---
+
+## Using NI Expenses
+
+### 1. Submit an Expense
+
+Navigate to **Submit Expense** from the top menu.
+
+**Required Information:**
+- **User**: Select from User1, User2, or User3
+- **Description**: Brief description of the expense (e.g., "Office supplies", "Travel expenses")
+- **Value**: Amount in Euros (€)
+- **Date of Expense**: When the expense occurred
+- **File**: Upload a JPG or PDF receipt/invoice (max 10MB)
+
+**Submission Process:**
+1. Fill in all required fields
+2. Upload your receipt/invoice file
+3. Click "Submit Expense"
+4. The expense will be created with status "recebida" (received)
+5. Files are automatically organized in OneDrive: `/NI-Expenses/{User}/{Year}/{Month}/expense-{id}/`
+
+### 2. View Monthly Reports
+
+Navigate to **Expense Reports** from the top menu.
+
+**Features:**
+- Filter by User, Year, and Month
+- View expense summary:
+  - Total number of expenses
+  - Count by state (recebida, paga, rejeitada)
+  - Total amount in Euros
+- Detailed expense table showing:
+  - Date of expense
+  - Description
+  - Value
+  - Download link for attached file
+  - Current state (editable)
+  - Submission date
+
+**Updating Expense State:**
+- In the reports page, use the dropdown in the "State" column
+- Select new state: Recebida, Paga, or Rejeitada
+- Changes are saved automatically to OneDrive
+
+### 3. OneDrive Storage Structure
+
+Expenses are organized in your OneDrive as follows:
+
+```
+OneDrive/
+└── NI-Expenses/
+    ├── User1/
+    │   ├── 2024/
+    │   │   ├── 01/  (January)
+    │   │   │   ├── expense-{uuid}/
+    │   │   │   │   ├── metadata.json
+    │   │   │   │   └── receipt.pdf
+    │   │   │   └── expense-{uuid}/
+    │   │   │       ├── metadata.json
+    │   │   │       └── invoice.jpg
+    │   │   └── 02/  (February)
+    │   └── 2025/
+    ├── User2/
+    └── User3/
+```
+
+**metadata.json structure:**
+```json
+{
+  "id": "uuid",
+  "user": "User1",
+  "description": "Office supplies",
+  "value": 45.99,
+  "expenseDate": "2024-01-15",
+  "fileName": "receipt.pdf",
+  "fileId": "onedrive-file-id",
+  "state": "recebida",
+  "submittedAt": "2024-01-15T10:30:00.000Z"
+}
+```
+
+---
+
 ## Supported File Types
+
+### AI Classification
 
 - **Documents**: PDF, DOCX
 - **Text Files**: TXT, MD, CSV, JSON, XML, HTML
 - **Other**: Any UTF-8 text-based format
+
+### NI Expenses
+
+- **Receipts/Invoices**: JPG, JPEG, PDF (max 10MB)
 
 ## API Endpoints
 
@@ -211,12 +321,19 @@ Results include:
 - `GET /files/:fileId` - Get file metadata
 - `POST /files/batch` - Get multiple files metadata
 
-### Submissions
+### Submissions (AI Classification)
 - `POST /submissions` - Create new submission
 - `POST /submissions/:id/process` - Process submission with classification
 - `GET /submissions/:id` - Get submission status and results
 - `GET /submissions` - List all user submissions
 - `DELETE /submissions/:id` - Delete submission
+
+### Expenses (NI Expenses)
+- `POST /api/expenses` - Submit a new expense
+- `GET /api/expenses/user/:user` - Get all expenses for a user
+- `GET /api/expenses/report/:user/:year/:month` - Get monthly report
+- `PATCH /api/expenses/:user/:id/state` - Update expense state
+- `GET /api/expenses/:user/:id/file` - Get expense file download URL
 
 ## Classification Configuration Schema
 

@@ -42,6 +42,38 @@ export interface User {
   refreshToken?: string;
 }
 
+export interface Expense {
+  id: string;
+  user: string;
+  description: string;
+  value: number;
+  expenseDate: string; // ISO date string
+  fileName: string;
+  fileId?: string; // OneDrive file ID
+  state: 'recebida' | 'paga' | 'rejeitada';
+  submittedAt: string; // ISO datetime string
+}
+
+export interface ExpenseSubmissionRequest {
+  user: string;
+  description: string;
+  value: number;
+  expenseDate: string;
+  file: Express.Multer.File;
+}
+
+export interface MonthlyExpenseReport {
+  user: string;
+  month: string; // YYYY-MM format
+  expenses: Expense[];
+  total: number;
+  countByState: {
+    recebida: number;
+    paga: number;
+    rejeitada: number;
+  };
+}
+
 declare module 'express-session' {
   interface SessionData {
     user?: User;

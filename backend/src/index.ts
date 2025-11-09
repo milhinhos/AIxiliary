@@ -5,6 +5,7 @@ import { config } from './config';
 import authRoutes from './routes/auth.routes';
 import filesRoutes from './routes/files.routes';
 import submissionsRoutes from './routes/submissions.routes';
+import expenseRoutes from './routes/expense.routes';
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use(
 app.use('/auth', authRoutes);
 app.use('/files', filesRoutes);
 app.use('/submissions', submissionsRoutes);
+app.use('/api/expenses', expenseRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
@@ -72,6 +74,13 @@ app.listen(config.port, () => {
   - GET  /files
   - POST /submissions
   - GET  /submissions/:id
+
+  NI Expenses API:
+  - POST  /api/expenses
+  - GET   /api/expenses/user/:user
+  - GET   /api/expenses/report/:user/:year/:month
+  - PATCH /api/expenses/:user/:id/state
+  - GET   /api/expenses/:user/:id/file
 
   `);
 });

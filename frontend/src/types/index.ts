@@ -46,3 +46,27 @@ export interface PickerFile {
   size: number;
   mimeType: string;
 }
+
+export interface Expense {
+  id: string;
+  user: string;
+  description: string;
+  value: number;
+  expenseDate: string;
+  fileName: string;
+  fileId?: string;
+  state: 'recebida' | 'paga' | 'rejeitada';
+  submittedAt: string;
+}
+
+export interface MonthlyExpenseReport {
+  user: string;
+  month: string;
+  expenses: Expense[];
+  total: number;
+  countByState: {
+    recebida: number;
+    paga: number;
+    rejeitada: number;
+  };
+}

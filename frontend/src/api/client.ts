@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { User, FileSubmission, OneDriveFile, ClassificationConfig } from '../types';
+import { User, FileSubmission, OneDriveFile, ClassificationConfig, Expense, MonthlyExpenseReport } from '../types';
 
 const api = axios.create({
   baseURL: 'http://localhost:3001',
@@ -79,6 +79,65 @@ export const submissionsApi = {
 
   deleteSubmission: async (submissionId: string): Promise<void> => {
     await api.delete(`/submissions/${submissionId}`);
+  },
+};
+
+export const expenseApi = {
+  submitExpense: async (
+    user: string,
+    description: string,
+    value: number,
+    expenseDate: string,
+    file: File
+  ): Promise<Expense> => {
+    const formData = new FormData();
+    formData.append('user', user);
+    formData.append('description', description);
+    formData.append('value', value.toString());
+    formData.append('expenseDate', expenseDate);
+    formData.append('file', file);
+
+    const response = await api.post<Expense>('/api/expenses', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  getUserExpenses: async (user: string): Promise<Expense[]> => {
+    const response = await api.get<Expense[]>(`/api/expenses/user/${user}`);
+    return response.data;
+  },
+
+  getMonthlyReport: async (
+    user: string,
+    year: number,
+    month: number
+  ): Promise<MonthlyExpenseReport> => {
+    const response = await api.get<MonthlyExpenseReport>(
+      `/api/expenses/report/${user}/${year}/${month}`
+    );
+    return response.data;
+  },
+
+  updateExpenseState: async (
+    user: string,
+    expenseId: string,
+    state: 'recebida' | 'paga' | 'rejeitada'
+  ): Promise<Expense> => {
+    const response = await api.patch<Expense>(
+      `/api/expenses/${user}/${expenseId}/state`,
+      { state }
+    );
+    return response.data;
+  },
+
+  getExpenseFileUrl: async (user: string, expenseId: string): Promise<string> => {
+    const response = await api.get<{ downloadUrl: string }>(
+      `/api/expenses/${user}/${expenseId}/file`
+    );
+    return response.data.downloadUrl;
   },
 };
 

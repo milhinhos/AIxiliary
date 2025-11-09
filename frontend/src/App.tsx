@@ -1,9 +1,11 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import SubmissionPage from './pages/SubmissionPage';
 import AuthSuccessPage from './pages/AuthSuccessPage';
+import ExpenseSubmissionPage from './pages/ExpenseSubmissionPage';
+import ExpenseReportsPage from './pages/ExpenseReportsPage';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
@@ -46,38 +48,77 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
 const AppContent: React.FC = () => {
   const { user, logout } = useAuth();
+  const location = useLocation();
+
+  const isExpensePage = location.pathname.startsWith('/expenses');
 
   return (
     <>
       {/* Navigation Bar */}
       {user && (
         <nav className="bg-white shadow-sm border-b border-gray-200">
-          <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
-                <svg
-                  className="w-5 h-5 text-white"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                  <path
-                    fillRule="evenodd"
-                    d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+          <div className="max-w-6xl mx-auto px-4 py-3">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
+                  <svg
+                    className="w-5 h-5 text-white"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                    <path
+                      fillRule="evenodd"
+                      d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <span className="font-bold text-xl text-gray-900">AIxiliary</span>
               </div>
-              <span className="font-bold text-xl text-gray-900">AIxiliary</span>
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-gray-600">{user.name}</span>
+                <button
+                  onClick={logout}
+                  className="text-sm text-gray-600 hover:text-gray-900 font-medium"
+                >
+                  Logout
+                </button>
+              </div>
             </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600">{user.name}</span>
-              <button
-                onClick={logout}
-                className="text-sm text-gray-600 hover:text-gray-900 font-medium"
+
+            {/* Navigation Links */}
+            <div className="flex gap-4 border-t pt-3">
+              <Link
+                to="/"
+                className={`text-sm font-medium px-3 py-2 rounded-md ${
+                  !isExpensePage
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`}
               >
-                Logout
-              </button>
+                AI Classification
+              </Link>
+              <Link
+                to="/expenses/submit"
+                className={`text-sm font-medium px-3 py-2 rounded-md ${
+                  location.pathname === '/expenses/submit'
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                Submit Expense
+              </Link>
+              <Link
+                to="/expenses/reports"
+                className={`text-sm font-medium px-3 py-2 rounded-md ${
+                  location.pathname === '/expenses/reports'
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                Expense Reports
+              </Link>
             </div>
           </div>
         </nav>
@@ -92,6 +133,22 @@ const AppContent: React.FC = () => {
           element={
             <ProtectedRoute>
               <SubmissionPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/expenses/submit"
+          element={
+            <ProtectedRoute>
+              <ExpenseSubmissionPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/expenses/reports"
+          element={
+            <ProtectedRoute>
+              <ExpenseReportsPage />
             </ProtectedRoute>
           }
         />
