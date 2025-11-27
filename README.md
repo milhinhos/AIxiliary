@@ -1,38 +1,68 @@
-# AIxiliary - AI-Powered File Classification System
+# AIxiliary - AI-Powered Document Processing for Credit Applications
 
-A web application that allows users to submit files from OneDrive (or local computer) and have them automatically classified and analyzed using OpenAI's GPT-4.
+A sophisticated web application for processing Portuguese house credit application documents using AI-powered orchestration, specialized document agents, and automated data extraction with Excel export capabilities.
 
 ## Features
 
-- **OneDrive Integration**: Authenticate with Microsoft OAuth and access OneDrive files
-- **Drag & Drop Interface**: Simple, intuitive file submission interface
-- **AI-Powered Classification**: Use GPT-4 to automatically classify and extract information from documents
-- **Custom Configuration**: Define your own classification prompts and extraction rules
-- **Multiple File Formats**: Support for PDF, DOCX, TXT, JSON, CSV, XML, HTML, and more
-- **Real-time Processing**: Submit and process files with immediate feedback
-- **Results Display**: View classification results and extracted information in an organized manner
+### Core Features
+- **OneDrive Integration**: Authenticate with Microsoft OAuth and access OneDrive files and folders
+- **Intelligent Document Classification**: LangChain-powered orchestrator agent automatically identifies document types
+- **Specialized Processing Agents**: Five dedicated agents for Portuguese credit application documents:
+  - ID Card (Cartão de Cidadão) Processor
+  - Tax Declaration (IRS) Processor
+  - Justice Declaration (Criminal Record) Processor
+  - Bank Authority Declaration (Banco de Portugal) Processor
+  - FIN Process (Bank Proposal) Processor
+- **Image Processing**: Full support for PDF and image files (JPG, PNG, etc.) using GPT-4 Vision
+- **Multi-Format Support**: Process PDFs, images, and text documents
+- **Excel Export**: Automatic generation of formatted Excel workbooks with summary sheets
+- **JSON/CSV Export**: Alternative export formats for integration with other systems
+- **Real-time Processing**: Folder-based batch processing with progress tracking
+
+### Advanced Features
+- **LangChain Orchestration**: Intelligent document routing using LangChain agents
+- **Configurable Agents**: Each specialized agent has independent configuration for prompts and extraction fields
+- **Vision API Integration**: Seamless processing of scanned documents and ID cards
+- **Structured Data Extraction**: Extract specific fields from each document type
+- **Confidence Scoring**: AI confidence levels for classification and extraction
+- **Error Handling**: Robust error handling with detailed error reporting
 
 ## Architecture
 
 ```
 AIxiliary/
-├── backend/              # Node.js/Express API server
+├── backend/                      # Node.js/Express API server
 │   ├── src/
-│   │   ├── config/       # Configuration management
-│   │   ├── middleware/   # Express middleware
-│   │   ├── routes/       # API routes
-│   │   ├── services/     # Business logic
-│   │   ├── types/        # TypeScript types
-│   │   └── index.ts      # Server entry point
+│   │   ├── agents/              # LangChain AI agents
+│   │   │   ├── configs/         # Agent configurations
+│   │   │   │   ├── id-card.config.ts
+│   │   │   │   ├── tax-declaration.config.ts
+│   │   │   │   ├── justice-declaration.config.ts
+│   │   │   │   ├── bank-authority.config.ts
+│   │   │   │   ├── fin-process.config.ts
+│   │   │   │   └── index.ts
+│   │   │   ├── orchestrator.agent.ts    # Document classification orchestrator
+│   │   │   └── specialized.agent.ts     # Specialized processing agents
+│   │   ├── config/              # Configuration management
+│   │   ├── middleware/          # Express middleware
+│   │   ├── routes/              # API routes
+│   │   ├── services/            # Business logic
+│   │   │   ├── document-processor.service.ts  # Main processing orchestration
+│   │   │   ├── excel-export.service.ts        # Excel generation
+│   │   │   ├── file-processor.service.ts      # File/image handling
+│   │   │   ├── onedrive.service.ts            # OneDrive integration
+│   │   │   └── submission.service.ts          # Submission management
+│   │   ├── types/               # TypeScript types
+│   │   └── index.ts             # Server entry point
 │   └── package.json
-├── frontend/             # React web application
+├── frontend/                    # React web application
 │   ├── src/
-│   │   ├── api/          # API client
-│   │   ├── components/   # React components
-│   │   ├── context/      # React context providers
-│   │   ├── pages/        # Page components
-│   │   ├── types/        # TypeScript types
-│   │   └── main.tsx      # App entry point
+│   │   ├── api/                 # API client
+│   │   ├── components/          # React components
+│   │   ├── context/             # React context providers
+│   │   ├── pages/               # Page components
+│   │   ├── types/               # TypeScript types
+│   │   └── main.tsx             # App entry point
 │   └── package.json
 └── README.md
 ```
@@ -192,11 +222,58 @@ Results include:
 - **Extracted Information**: Key-value pairs of extracted data
 - **Error Messages**: If any files failed to process
 
-## Supported File Types
+## Document Types
 
-- **Documents**: PDF, DOCX
-- **Text Files**: TXT, MD, CSV, JSON, XML, HTML
-- **Other**: Any UTF-8 text-based format
+The system is configured to process five types of Portuguese credit application documents:
+
+### 1. ID Card (Cartão de Cidadão)
+Extracts personal identification information:
+- Full name, document numbers, date of birth
+- ID number, expiration date, gender
+- Nationality, height, parents' names
+- Address (if visible)
+- Supports both image and PDF formats
+
+### 2. Tax Declaration (Declaração de IRS)
+Extracts tax and income information:
+- Tax year, NIF (taxpayer ID), taxpayer name
+- Total annual income, taxable income
+- Tax withheld, tax to pay/refund
+- Employment, business, and property income
+- Household composition
+
+### 3. Justice Declaration (Certificado de Registo Criminal)
+Extracts criminal record information:
+- Certificate number, issue date
+- Full name, date of birth, ID number
+- Criminal record status (has records or not)
+- Issuing authority, validity period
+- Any observations or notes
+
+### 4. Bank Authority Declaration (Banco de Portugal)
+Extracts credit responsibility information:
+- Document date, reference number
+- Total credit responsibilities
+- Active loans, credit cards, overdrafts
+- Guarantees provided
+- Overdue debts and credit incidents
+
+### 5. FIN Process (Bank Loan Proposal)
+Extracts loan proposal details:
+- Process number, bank name, proposal date
+- Applicant and co-applicant names
+- Requested and approved amounts
+- Interest rates (TAEG, TAN), loan term
+- Monthly payment, total repayment amount
+- Required guarantees and insurance
+- Decision status
+
+## Supported File Formats
+
+- **PDF Files**: All document types
+- **Image Files**: JPG, JPEG, PNG, GIF, BMP, TIFF (processed with GPT-4 Vision)
+- **Text Files**: TXT, MD, CSV, JSON, XML, HTML (for reference documents)
+- **Word Documents**: DOCX
 
 ## API Endpoints
 
@@ -212,10 +289,13 @@ Results include:
 - `POST /files/batch` - Get multiple files metadata
 
 ### Submissions
-- `POST /submissions` - Create new submission
-- `POST /submissions/:id/process` - Process submission with classification
+- `POST /submissions` - Create new submission (legacy)
+- `POST /submissions/:id/process` - Process submission with classification (legacy)
+- `POST /submissions/process-folder` - **Process entire OneDrive folder with orchestrator**
 - `GET /submissions/:id` - Get submission status and results
 - `GET /submissions` - List all user submissions
+- `GET /submissions/:id/export/excel` - **Download Excel export**
+- `GET /submissions/:id/export/json` - **Download JSON export**
 - `DELETE /submissions/:id` - Delete submission
 
 ## Classification Configuration Schema
@@ -229,50 +309,119 @@ Results include:
 }
 ```
 
-## Example Classification Prompts
+## How It Works
 
-### Invoice Processing
-```
-Classify this document as an Invoice, Receipt, or Purchase Order.
+### Processing Flow
 
-Extract the following information:
-- Invoice Number
-- Date
-- Vendor Name
-- Total Amount
-- Line Items (description and amount)
-- Payment Terms
+1. **Folder Upload**: User uploads files to a OneDrive folder designated for a specific credit application
+2. **Document Classification**: Orchestrator agent analyzes each file and determines its type
+3. **Specialized Processing**: Each document is routed to its specialized agent for data extraction
+4. **Excel Generation**: Results are compiled into a formatted Excel workbook with:
+   - Summary sheet with statistics
+   - Detailed data sheet with all extracted information
+   - Color-coded rows by document type
+5. **Export**: Download Excel, JSON, or CSV formats
+
+### Agent Configuration
+
+Each specialized agent can be configured independently in `/backend/src/agents/configs/`:
+
+```typescript
+export const documentTypeConfig = {
+  name: 'Agent Name',
+  description: 'What this agent processes',
+  prompt: 'Detailed prompt for the agent...',
+  extractionFields: ['field1', 'field2', ...],
+  categories: ['Category1', 'Category2', ...],
+  model: 'gpt-4-turbo-preview' or 'gpt-4-vision-preview',
+  supportsImages: true/false
+};
 ```
 
-### Resume Screening
-```
-Analyze this resume and extract:
-- Candidate Name
-- Email and Phone
-- Years of Experience
-- Top 3 Skills
-- Education Level
-- Current/Most Recent Position
+### Using the Orchestrator API
 
-Classify the candidate as: Junior, Mid-Level, Senior, or Executive
+**Process a folder:**
+
+```bash
+POST /submissions/process-folder
+Content-Type: application/json
+
+{
+  "folderId": "your-onedrive-folder-id"
+}
 ```
 
-### Contract Analysis
-```
-Identify the type of contract:
-- Employment Agreement
-- Service Agreement
-- NDA
-- License Agreement
-- Other
+**Response:**
 
-Extract:
-- Parties involved
-- Effective Date
-- Expiration Date
-- Key Terms and Obligations
-- Payment Terms (if applicable)
+```json
+{
+  "submission": {
+    "id": "submission-uuid",
+    "status": "completed",
+    "submittedAt": "2024-01-20T10:00:00Z",
+    "completedAt": "2024-01-20T10:05:00Z",
+    "results": [
+      {
+        "fileName": "id_card.jpg",
+        "documentType": "id-card",
+        "classificationConfidence": 0.98,
+        "extractedData": {
+          "fullName": "João Silva",
+          "documentNumber": "123456789",
+          ...
+        },
+        "processingStatus": "success"
+      },
+      ...
+    ],
+    "hasExcelExport": true
+  }
+}
 ```
+
+**Download Excel:**
+
+```bash
+GET /submissions/{submission-id}/export/excel
+```
+
+Returns an Excel file with:
+- Summary sheet with document type breakdown
+- Detailed data sheet with all extracted fields
+- Color-coded by document type
+- Frozen headers for easy navigation
+
+## Example Use Case: Credit Application Processing
+
+1. Customer applies for a house loan
+2. Customer uploads documents to their OneDrive folder:
+   - ID card (front and back as images)
+   - Tax declarations (PDF)
+   - Criminal record certificate (PDF)
+   - Bank of Portugal declaration (PDF)
+   - FIN process from another bank (PDF)
+
+3. Credit officer processes the folder via the API:
+```bash
+POST /submissions/process-folder
+{
+  "folderId": "customer-123-application"
+}
+```
+
+4. System automatically:
+   - Identifies each document type with 95%+ confidence
+   - Extracts all relevant data using specialized agents
+   - Generates comprehensive Excel report
+
+5. Credit officer downloads Excel file containing:
+   - Customer's personal information (from ID)
+   - Income and tax details (from IRS)
+   - Criminal record status
+   - Existing credit responsibilities
+   - Competing loan offers
+
+6. Officer uses Excel data to make informed credit decision
 
 ## Security Notes
 
