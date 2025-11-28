@@ -84,10 +84,10 @@ AIxiliary/
    - **Supported account types**: Accounts in any organizational directory and personal Microsoft accounts
    - **Redirect URI**: Web - `http://localhost:3001/auth/callback`
 4. After creation, note down:
-   - **Application (client) ID**
-   - **Directory (tenant) ID**
+   - **Application (client) ID**  bca6a641-b7ae-46ca-a752-93d58aeeb111
+   - **Directory (tenant) ID**  82a7b152-bdca-42b8-9844-87aa3e811166
 5. Go to **Certificates & secrets** > **New client secret**
-   - Create a new secret and save the **Value** immediately
+   - Create a new secret and save the **Value** immediately  
 6. Go to **API permissions** > **Add a permission** > **Microsoft Graph** > **Delegated permissions**
    - Add: `User.Read`, `Files.Read`, `Files.Read.All`
 7. Click **Grant admin consent** if required
