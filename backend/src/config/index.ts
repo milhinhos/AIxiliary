@@ -7,6 +7,16 @@ export const config = {
   nodeEnv: process.env.NODE_ENV || 'development',
   sessionSecret: process.env.SESSION_SECRET || 'dev-secret-change-in-production',
 
+  database: {
+    url: process.env.DATABASE_URL || '',
+    useDatabase: process.env.USE_DATABASE === 'true' || process.env.NODE_ENV === 'production',
+  },
+
+  redis: {
+    url: process.env.REDIS_URL || '',
+    useRedis: process.env.USE_REDIS === 'true' || process.env.NODE_ENV === 'production',
+  },
+
   microsoft: {
     clientId: process.env.MICROSOFT_CLIENT_ID || '',
     clientSecret: process.env.MICROSOFT_CLIENT_SECRET || '',
@@ -22,6 +32,15 @@ export const config = {
 
   frontend: {
     url: process.env.FRONTEND_URL || 'http://localhost:5173',
+  },
+
+  storage: {
+    connectionString: process.env.STORAGE_CONNECTION_STRING || '',
+    containerName: process.env.STORAGE_CONTAINER_NAME || 'aixiliary-exports',
+  },
+
+  appInsights: {
+    instrumentationKey: process.env.APPINSIGHTS_INSTRUMENTATIONKEY || '',
   },
 };
 
