@@ -3,10 +3,45 @@ import mammoth from 'mammoth';
 
 export class FileProcessorService {
   /**
+   * Check if a file is an image
+   */
+  isImageFile(mimeType: string, fileName: string): boolean {
+    const imageMimeTypes = [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+      'image/bmp',
+      'image/tiff',
+    ];
+
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.tiff', '.tif'];
+
+    return (
+      imageMimeTypes.includes(mimeType.toLowerCase()) ||
+      imageExtensions.some((ext) => fileName.toLowerCase().endsWith(ext))
+    );
+  }
+
+  /**
+   * Convert buffer to base64 for image processing
+   */
+  bufferToBase64(buffer: Buffer, mimeType: string): string {
+    return `data:${mimeType};base64,${buffer.toString('base64')}`;
+  }
+
+  /**
    * Extract text content from a file based on its MIME type
+   * For images, returns a special marker that the caller should handle with Vision API
    */
   async extractTextContent(buffer: Buffer, mimeType: string, fileName: string): Promise<string> {
     try {
+      // Image files - return marker for vision processing
+      if (this.isImageFile(mimeType, fileName)) {
+        return '[IMAGE_FILE_REQUIRES_VISION_PROCESSING]';
+      }
+
       // PDF files
       if (mimeType === 'application/pdf' || fileName.endsWith('.pdf')) {
         return await this.extractPdfText(buffer);

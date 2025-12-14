@@ -6,17 +6,11 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/auth': {
+      // Only proxy API endpoints, not frontend routes
+      '/api': {
         target: 'http://localhost:3001',
         changeOrigin: true,
-      },
-      '/files': {
-        target: 'http://localhost:3001',
-        changeOrigin: true,
-      },
-      '/submissions': {
-        target: 'http://localhost:3001',
-        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },
