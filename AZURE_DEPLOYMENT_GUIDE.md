@@ -306,7 +306,7 @@ export MICROSOFT_CLIENT_ID="bca6a641-b7ae-46ca-a752-93d58aeeb111"  # From README
 export MICROSOFT_TENANT_ID="82a7b152-bdca-42b8-9844-87aa3e811166"  # From README
 export MICROSOFT_CLIENT_SECRET="YOUR_CLIENT_SECRET_HERE"  # From Azure portal
 export OPENAI_API_KEY="YOUR_OPENAI_API_KEY_HERE"  # From OpenAI platform
-export FRONTEND_URL="https://YOUR_CUSTOM_DOMAIN"  # Or use Azure Static Web App URL later
+export FRONTEND_URL="https://victorious-hill-02222ae03.3.azurestaticapps.net"  # Or use Azure Static Web App URL later
 
 # Configure all environment variables
 az webapp config appsettings set \
