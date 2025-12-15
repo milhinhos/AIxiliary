@@ -431,32 +431,15 @@ npm run build
 echo "✓ Frontend built successfully"
 ```
 
-### Step 4.2: Option A - Deploy to Azure Static Web Apps (Recommended)
+### Step 4.2: Option A - Deploy to Azure Blob Storage (Recommended - Simpler)
+
+This is the **simplest and most reliable** option - just upload static files to blob storage.
 
 ```bash
-# Create Static Web App
-az staticwebapp create \
-  --name $FRONTEND_APP_NAME \
-  --resource-group $RESOURCE_GROUP \
-  --location $LOCATION \
-  --source "." \
-  --branch main \
-  --app-location "frontend" \
-  --output-location "dist" \
-  --sku Free
+# Set variables (if not already set)
+export STORAGE_NAME="aixiliarystorage"  # From Step 1.6
+export RESOURCE_GROUP="aixiliary-prod-rg"
 
-# Get static web app URL
-FRONTEND_URL=$(az staticwebapp show \
-  --name $FRONTEND_APP_NAME \
-  --resource-group $RESOURCE_GROUP \
-  --query defaultHostname -o tsv)
-
-echo "Frontend URL: https://$FRONTEND_URL"
-```
-
-### Step 4.3: Option B - Deploy to Azure Blob Storage + CDN
-
-```bash
 # Enable static website hosting
 az storage blob service-properties update \
   --account-name $STORAGE_NAME \
@@ -468,15 +451,94 @@ az storage blob service-properties update \
 az storage blob upload-batch \
   --source dist \
   --destination '$web' \
-  --account-name $STORAGE_NAME
+  --account-name $STORAGE_NAME \
+  --overwrite
+
+echo "✓ Files uploaded to blob storage"
 
 # Get website URL
 FRONTEND_URL=$(az storage account show \
   --name $STORAGE_NAME \
   --resource-group $RESOURCE_GROUP \
-  --query "primaryEndpoints.web" -o tsv)
+  --query "primaryEndpoints.web" -o tsv | sed 's:/*$::')
 
 echo "Frontend URL: $FRONTEND_URL"
+```
+
+**Or use the automated deployment script:**
+
+```bash
+cd frontend
+chmod +x deploy-to-azure.sh
+./deploy-to-azure.sh $STORAGE_NAME $BACKEND_APP_NAME
+```
+
+### Step 4.3: Option B - Deploy to Azure Static Web Apps (Advanced)
+
+**Note:** This option requires GitHub/Azure DevOps integration. Use Option A if you want a simpler deployment.
+
+**Manual deployment (no source control):**
+
+```bash
+# Create Static Web App without source control
+az staticwebapp create \
+  --name $FRONTEND_APP_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --location $LOCATION \
+  --sku Free
+
+# Get deployment token
+DEPLOYMENT_TOKEN=$(az staticwebapp secrets list \
+  --name $FRONTEND_APP_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --query properties.apiKey -o tsv)
+
+# Install Static Web Apps CLI
+npm install -g @azure/static-web-apps-cli
+
+# Deploy built files
+swa deploy ./dist \
+  --deployment-token $DEPLOYMENT_TOKEN \
+  --env production
+
+# Get static web app URL
+FRONTEND_URL=$(az staticwebapp show \
+  --name $FRONTEND_APP_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --query defaultHostname -o tsv)
+
+echo "Frontend URL: https://$FRONTEND_URL"
+```
+
+**With GitHub integration (requires Personal Access Token):**
+
+```bash
+# 1. Create GitHub PAT: https://github.com/settings/tokens
+# 2. Select scope: 'repo' (Full control of private repositories)
+# 3. Copy the token
+
+export GITHUB_TOKEN="ghp_your_token_here"
+export GITHUB_REPO_URL="https://github.com/YOUR_USERNAME/AIxiliary"
+
+# Create Static Web App with GitHub integration
+az staticwebapp create \
+  --name $FRONTEND_APP_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --location $LOCATION \
+  --source "$GITHUB_REPO_URL" \
+  --branch main \
+  --app-location "frontend" \
+  --output-location "dist" \
+  --token $GITHUB_TOKEN \
+  --sku Free
+
+# Get static web app URL
+FRONTEND_URL=$(az staticwebapp show \
+  --name $FRONTEND_APP_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --query defaultHostname -o tsv)
+
+echo "Frontend URL: https://$FRONTEND_URL"
 ```
 
 ### Step 4.4: Update Backend with Frontend URL
