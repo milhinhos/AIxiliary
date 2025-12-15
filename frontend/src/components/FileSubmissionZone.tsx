@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDropzone } from 'react-dropzone';
 import { PickerFile } from '../types';
 
@@ -15,8 +15,6 @@ const FileSubmissionZone: React.FC<FileSubmissionZoneProps> = ({
   onFileRemoved,
   onClearAll,
 }) => {
-  const [draggedFileIds, setDraggedFileIds] = useState<string[]>([]);
-
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (acceptedFiles) => {
       // Simulate OneDrive file IDs for dropped files

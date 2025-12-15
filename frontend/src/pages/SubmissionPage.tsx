@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import FileSubmissionZone from '../components/FileSubmissionZone';
 import OneDrivePicker from '../components/OneDrivePicker';
 import ClassificationConfigComponent from '../components/ClassificationConfig';
@@ -8,7 +7,6 @@ import { PickerFile, ClassificationConfig } from '../types';
 import { submissionsApi } from '../api/client';
 
 const SubmissionPage: React.FC = () => {
-  const navigate = useNavigate();
   const [selectedFiles, setSelectedFiles] = useState<PickerFile[]>([]);
   const [classificationConfig, setClassificationConfig] = useState<ClassificationConfig>({
     prompt: `Analyze this document and classify it into one of the following categories:
