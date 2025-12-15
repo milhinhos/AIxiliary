@@ -8,8 +8,7 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "start:prod": "pm2 start ecosystem.config.js --env production",
-    "migrate": "psql $DATABASE_URL -f database/schema.sql",
-    "postinstall": "npm run build"
+    "migrate": "psql $DATABASE_URL -f database/schema.sql"
   },
   "dependencies": {
     "@azure/msal-node": "^2.6.0",

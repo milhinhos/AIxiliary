@@ -110,14 +110,17 @@ export class ExcelExportService {
     });
 
     // Auto-fit columns
-    worksheet.columns.forEach((column) => {
-      let maxLength = 0;
-      column.eachCell({ includeEmpty: true }, (cell) => {
-        const cellValue = cell.value ? cell.value.toString() : '';
-        maxLength = Math.max(maxLength, cellValue.length);
+    if (worksheet.columns) {
+      worksheet.columns.forEach((column) => {
+        if (!column) return;
+        let maxLength = 0;
+        column.eachCell?.({ includeEmpty: true }, (cell) => {
+          const cellValue = cell.value ? cell.value.toString() : '';
+          maxLength = Math.max(maxLength, cellValue.length);
+        });
+        column.width = Math.min(Math.max(maxLength + 2, 12), 50);
       });
-      column.width = Math.min(Math.max(maxLength + 2, 12), 50);
-    });
+    }
 
     // Freeze header row
     worksheet.views = [
@@ -132,7 +135,7 @@ export class ExcelExportService {
 
     // Generate buffer
     const buffer = await workbook.xlsx.writeBuffer();
-    return buffer as Buffer;
+    return Buffer.from(buffer as ArrayBuffer);
   }
 
   /**
@@ -328,17 +331,20 @@ export class ExcelExportService {
       dataSheet.addRow(rowData);
     });
 
-    dataSheet.columns.forEach((column) => {
-      let maxLength = 0;
-      column.eachCell({ includeEmpty: true }, (cell) => {
-        const cellValue = cell.value ? cell.value.toString() : '';
-        maxLength = Math.max(maxLength, cellValue.length);
+    if (dataSheet.columns) {
+      dataSheet.columns.forEach((column) => {
+        if (!column) return;
+        let maxLength = 0;
+        column.eachCell?.({ includeEmpty: true }, (cell) => {
+          const cellValue = cell.value ? cell.value.toString() : '';
+          maxLength = Math.max(maxLength, cellValue.length);
+        });
+        column.width = Math.min(Math.max(maxLength + 2, 12), 50);
       });
-      column.width = Math.min(Math.max(maxLength + 2, 12), 50);
-    });
+    }
 
     const buffer = await workbook.xlsx.writeBuffer();
-    return buffer as Buffer;
+    return Buffer.from(buffer as ArrayBuffer);
   }
 }
 
