@@ -7,7 +7,7 @@ import { AgentConfig, AgentType, agentConfigs } from './configs';
 import { fileProcessorService } from '../services/file-processor.service';
 
 export interface ExtractionResult {
-  documentType: AgentType;
+  documentType: AgentType | 'unknown';
   extractedData: Record<string, any>;
   confidence?: number;
   rawResponse?: string;
